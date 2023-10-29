@@ -3,10 +3,10 @@ import { useLoaderData } from "react-router-dom";
 import { AuthContext } from "../../providers/AuthProvider";
 
 const BookingService = () => {
-    const booking = useLoaderData();
+    const service = useLoaderData();
     const { user } = useContext(AuthContext);
     // console.log(booking);
-    const { _id, service_id, title, price } = booking;
+    const { _id, title, price, img } = service;
 
     const handleBooking = event => {
         event.preventDefault();
@@ -18,11 +18,13 @@ const BookingService = () => {
         const date = form.date.value;
 
         const booking = {
-            service_id,
             customerName: name,
             email,
+            img,
             date,
-            price
+            service: title,
+            service_id: _id,
+            price: price
         }
 
         fetch(`http://localhost:5313/bookings/${_id}`, {
@@ -33,6 +35,9 @@ const BookingService = () => {
             .then(response => response.json())
             .then(data => {
                 console.log(data);
+                if (data.insertedId) {
+                    alert('service book successfully');
+                }
             })
     }
 
@@ -44,7 +49,7 @@ const BookingService = () => {
                     <label className="label">
                         <span className="label-text">Name</span>
                     </label>
-                    <input type="text" name='name' placeholder="Name" className="input input-bordered" required />
+                    <input type="text" name='name' defaultValue={user?.displayName} placeholder="Name" className="input input-bordered" required />
                 </div>
                 <div className="form-control">
                     <label className="label">

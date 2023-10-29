@@ -2,11 +2,13 @@ import { Link } from 'react-router-dom';
 import img from '../../assets/images/login/login.svg';
 import { useContext } from 'react';
 import { AuthContext } from '../../providers/AuthProvider';
+import { getAuth, updateProfile } from "firebase/auth";
+import app from '../../firebase/firebase.config';
 
 const Signup = () => {
     const { createUser } = useContext(AuthContext);
 
-    const handleSignup = event => {
+    const handleSignup = async (event) => {
         event.preventDefault();
 
         const form = event.target;
@@ -17,13 +19,27 @@ const Signup = () => {
 
         console.log(name, email, password);
 
-        createUser(email, password)
+        await createUser(email, password)
             .then(userCredentials => {
                 console.log(userCredentials.user);
             })
             .catch(err => {
                 console.error(err);
-            })
+            });
+
+        const auth = getAuth(app);
+        updateProfile(auth.currentUser, {
+            displayName: name,
+            // photoURL: "https://example.com/jane-q-user/profile.jpg"
+        }).then(() => {
+            // Profile updated!
+            // ...
+            console.log('Profile updated');
+        }).catch((error) => {
+            // An error occurred
+            // ...
+            console.error(error);
+        });
 
     }
     return (
